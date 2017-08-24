@@ -38,7 +38,7 @@ class GitHubRequest:
         response = requests.get(url, auth=self.auth)
         bucket.all_pages.append(response.json())
         if response and response.links and response.links.get('last', None):
-            bucket.page_count = int(response.links['last']['url'].split('=')[1])
+            bucket.page_count = int(response.links['last']['url'].split('page=')[1])
             bucket.counter = 1
             self.pageNext(response.links['next']['url'], bucket)
 

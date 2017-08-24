@@ -25,8 +25,23 @@ def test_paging():
     endpoint = "repos/%s/%s/pulls" % (owner, repo_name)  # no trailing '/' !!
     response = gh.get(endpoint)
     print (len(response))
+    assert len(response) > gh_default_pagesize
     t1 = TimeStamp.fromFormattedString(response[0]['created_at'], ISO_FORMAT)
     t2 = TimeStamp.fromFormattedString(response[-1]['created_at'], ISO_FORMAT)
     assert t1.asEpochSeconds() > t2.asEpochSeconds()
 
+def test_filter_by_created_at():
+    # curl -i 'https://api.github.com/repos/RallySoftware/churro/pulls?since=2017-08-23T00:00:00Z' -u nmusaelian-rally:pass
+    repo_name = 'churro'
+    owner = config['Organization']
+    ref_time_string = '2017-08-23T00:00:00Z'
+    state = 'open'
+    #endpoint = "repos/%s/%s/pulls?created>%s" % (owner, repo_name, ref_time_string)
+    endpoint = "repos/%s/%s/pulls?state=%s" % (owner, repo_name, state)
+    response = gh.get(endpoint)
+    print(len(response))
+    #assert len(response) > gh_default_pagesize
+    t1 = TimeStamp.fromFormattedString(response[0]['created_at'], ISO_FORMAT)
+    t2 = TimeStamp.fromFormattedString(response[-1]['created_at'], ISO_FORMAT)
+    assert t1.asEpochSeconds() > t2.asEpochSeconds()
 
